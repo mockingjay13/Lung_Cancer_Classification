@@ -51,6 +51,6 @@ def calculate_tumor_area(image_path):
 
 
 if __name__ == '__main__':
-    img_path = 'lungs.png'
+    img_path = 'test.png'
     result = calculate_tumor_area(img_path)
-    print("Segmented Tumor Area in physical units: "+ result +" mm^2")
+    print("Segmented Tumor Area in physical units: "+ str(result) +" mm^2")
