@@ -39,13 +39,14 @@ class CancerPredictionApp:
         accuracy_formatted = f"{accuracy_percent}%"
 
         # Fixed labels
-        y_position = 80
+        y_position = 130
 
         tk.Label(root, text="Model Accuracy:").place(x=460, y=y_position)
         tk.Label(root, text=accuracy_formatted).place(x=570, y=y_position)
 
         # Text fields and labels
-        labels = ["Morphology::", "Area size of tumor:", "Cancer stage:"]
+        # labels = ["Morphology:", "Area size of tumor:", "Cancer stage:"]
+        labels = ["Morphology:"]
         self.text_fields = []
 
         y_position += 40
@@ -84,8 +85,8 @@ class CancerPredictionApp:
             prediction_formatted = round(prediction[1]*100, 2)
   
             self.text_fields[0].insert(tk.END, prediction[0])
-            self.text_fields[1].insert(tk.END, f"{prediction_formatted} sqcm")
-            self.text_fields[2].insert(tk.END, prediction[2])    
+            #self.text_fields[1].insert(tk.END, f"{prediction_formatted} sqcm")
+            #self.text_fields[2].insert(tk.END, prediction[2])    
 
 
     def clear_all(self):

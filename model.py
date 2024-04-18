@@ -1,6 +1,8 @@
 import keras
 import tensorflow as tf
 from keras.src.legacy.preprocessing.image import ImageDataGenerator
+from sklearn.metrics import classification_report, confusion_matrix
+import numpy as np
 # from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Dropout, BatchNormalization, Conv2D, MaxPooling2D, Input
@@ -162,6 +164,76 @@ model_history = model.fit(train_DataSet,
                     callbacks = [checkpointer, early_stopping])
 
 model_scores = model.evaluate(test_DataSet)
+
+#plt.plot(model_history.history['acc'], label = 'train',)
+#plt.plot(model_history.history['val_acc'], label = 'val')
+
+#plt.legend(loc = 'right')
+#plt.xlabel('epochs')
+#plt.ylabel('accuracy')
+#plt.show()
+
+# Plotting accuracy curves
+#plt.plot(model_history.history['acc'], label='Training Accuracy', color='blue')
+#plt.plot(model_history.history['val_acc'], label='Validation Accuracy', color='orange')
+
+# Adding title and labels
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+
+# Smoothing the curves
+smooth_window = 5
+smoothed_train_acc = [sum(model_history.history['acc'][i:i+smooth_window])/smooth_window for i in range(len(model_history.history['acc'])-smooth_window)]
+smoothed_val_acc = [sum(model_history.history['val_acc'][i:i+smooth_window])/smooth_window for i in range(len(model_history.history['val_acc'])-smooth_window)]
+#plt.plot(smoothed_train_acc, label='Smoothed Training Accuracy', color='darkblue', linestyle='--')
+#plt.plot(smoothed_val_acc, label='Smoothed Validation Accuracy', color='darkorange', linestyle='--')
+plt.plot(smoothed_train_acc, label='Smoothed Training Accuracy', color='darkblue')
+plt.plot(smoothed_val_acc, label='Smoothed Validation Accuracy', color='darkorange')
+
+# Adding legend
+plt.legend(loc='lower right')
+
+# Displaying the plot
+plt.show()
+
+
+# Predict labels for test dataset
+y_pred = model.predict(test_DataSet)
+y_pred_classes = np.argmax(y_pred, axis=1)
+true_classes = test_DataSet.classes
+
+# Get class labels
+class_labels = list(test_DataSet.class_indices.keys())
+
+# Print classification report
+print("Classification Report:")
+print(classification_report(true_classes, y_pred_classes, target_names=class_labels))
+
+# Plot confusion matrix
+cm = confusion_matrix(true_classes, y_pred_classes)
+plt.figure(figsize=(8, 6))
+plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+plt.title('Confusion Matrix')
+plt.colorbar()
+tick_marks = np.arange(len(class_labels))
+plt.xticks(tick_marks, class_labels, rotation=45)
+plt.yticks(tick_marks, class_labels)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+
+# Fill the confusion matrix with numbers
+thresh = cm.max() / 2.
+for i in range(cm.shape[0]):
+    for j in range(cm.shape[1]):
+        plt.text(j, i, format(cm[i, j], 'd'),
+                 ha="center", va="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+# Show the plot
+plt.tight_layout()
+plt.show()
+
 
 # Save the model
 model.save('lung_cancer_trained_model.keras')
